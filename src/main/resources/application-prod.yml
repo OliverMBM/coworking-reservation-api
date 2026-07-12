@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:1h}
+
+  payment:
+    base-url: ${PAYMENT_BASE_URL}
+    timeout: ${PAYMENT_TIMEOUT:2s}
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    org.springframework.security: warn
