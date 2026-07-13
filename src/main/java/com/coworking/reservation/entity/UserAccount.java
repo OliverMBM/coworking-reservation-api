@@ -13,7 +13,7 @@ import lombok.Data;
                         columnNames = "email")
         }
 )
-public class User {
+public class UserAccount {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,9 +32,9 @@ public class User {
     @Column(nullable = false, length = 20)
     private Role role;
 
-    protected User(){}
+    protected UserAccount(){}
 
-    public User(String name, String email, String password, Role role) {
+    public UserAccount(String name, String email, String password, Role role) {
         this.name = name;
         this.email = email;
         this.password = password;
