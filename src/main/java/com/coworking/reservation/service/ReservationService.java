@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -45,6 +46,7 @@ public class ReservationService {
     private final ReservationMapper reservationMapper;
     private final ApplicationEventPublisher eventPublisher;
 
+    @CacheEvict(value = "occupancyReports", allEntries = true)
     @Transactional
     public ReservationResponse create(
             CreateReservationRequest request,
@@ -121,6 +123,7 @@ public class ReservationService {
                 .map(reservationMapper::toResponse);
     }
 
+    @CacheEvict(value = "occupancyReports", allEntries = true)
     @Transactional
     public void cancelMine(Long reservationId, String userEmail){
         User user = findUserByEmail(userEmail);
@@ -136,6 +139,7 @@ public class ReservationService {
         cancelReservation(reservation);
     }
 
+    @CacheEvict(value = "occupancyReports", allEntries = true)
     @Transactional
     public void cancelAsAdmin(Long reservationId){
         Reservation reservation = findReservationWithDetails(reservationId);

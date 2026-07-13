@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
@@ -57,4 +58,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             where r.id = :id
             """)
     Optional<Reservation> findByIdWithDetails(@Param("id") Long id);
+
+    @EntityGraph(attributePaths = {"space"})
+    @Query("""
+            select r
+            from Reservation r
+            where r.status = :status
+            and r.startTime < :endTime
+            and r.endTime > :startTime
+            """)
+    List<Reservation> findByStatusOverlappingPeriod(
+            @Param("status") ReservationStatus status,
+            @Param("startTime") LocalDateTime startTime,
+            @Param("endTime") LocalDateTime endTime
+    );
 }

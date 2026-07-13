@@ -10,11 +10,14 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface SpaceRepository extends JpaRepository<Space, Long>, JpaSpecificationExecutor<Space> {
 
     Page<Space> findByActiveTrue(Pageable pageable);
+
+    List<Space> findByActiveTrue();
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select s from Space s where s.id = :id")
