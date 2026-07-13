@@ -4,14 +4,14 @@ import com.coworking.reservation.dto.request.CreateReservationRequest;
 import com.coworking.reservation.dto.response.ReservationResponse;
 import com.coworking.reservation.entity.Reservation;
 import com.coworking.reservation.entity.Space;
-import com.coworking.reservation.entity.User;
+import com.coworking.reservation.entity.UserAccount;
 import com.coworking.reservation.entity.enums.ReservationStatus;
 import com.coworking.reservation.event.ReservationConfirmedEvent;
 import com.coworking.reservation.exception.*;
 import com.coworking.reservation.mapper.ReservationMapper;
 import com.coworking.reservation.repository.ReservationRepository;
 import com.coworking.reservation.repository.SpaceRepository;
-import com.coworking.reservation.repository.UserRepository;
+import com.coworking.reservation.repository.UserAccountRepository;
 import com.coworking.reservation.service.payment.PaymentClient;
 import com.coworking.reservation.service.payment.PaymentValidationRequest;
 import com.coworking.reservation.service.payment.PaymentValidationResponse;
@@ -40,7 +40,7 @@ public class ReservationService {
 
     private final ReservationRepository reservationRepository;
     private final SpaceRepository spaceRepository;
-    private final UserRepository userRepository;
+    private final UserAccountRepository userRepository;
     private final PricingService pricingService;
     private final PaymentClient paymentClient;
     private final ReservationMapper reservationMapper;
@@ -52,7 +52,7 @@ public class ReservationService {
             CreateReservationRequest request,
             String userEmail
     ){
-        User user = findUserByEmail(userEmail);
+        UserAccount user = findUserByEmail(userEmail);
         Space space = spaceRepository.findByIdForUpdate(request.spaceId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
@@ -110,7 +110,7 @@ public class ReservationService {
             String userEmail,
             Pageable pageable
     ){
-        User user = findUserByEmail(userEmail);
+        UserAccount user = findUserByEmail(userEmail);
 
         return reservationRepository
                 .findByUserIdWithDetails(user.getId(), pageable)
@@ -126,7 +126,7 @@ public class ReservationService {
     @CacheEvict(value = "occupancyReports", allEntries = true)
     @Transactional
     public void cancelMine(Long reservationId, String userEmail){
-        User user = findUserByEmail(userEmail);
+        UserAccount user = findUserByEmail(userEmail);
 
         Reservation reservation = findReservationWithDetails(reservationId);
 
@@ -187,7 +187,7 @@ public class ReservationService {
         reservation.cancel();
     }
 
-    private User findUserByEmail(String email){
+    private UserAccount findUserByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(

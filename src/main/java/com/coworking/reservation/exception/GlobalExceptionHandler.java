@@ -3,14 +3,13 @@ package com.coworking.reservation.exception;
 import com.coworking.reservation.dto.response.ApiErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import lombok.val;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.security.core.AuthenticationException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -142,6 +141,32 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(status).body(response);
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiErrorResponse> handleEmailAlreadyExists(
+            EmailAlreadyExistsException exception,
+            HttpServletRequest request
+    ){
+        return buildResponse(
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiErrorResponse> handleAuthenticationException(
+            AuthenticationException exception,
+            HttpServletRequest request
+    ){
+        return buildResponse(
+                HttpStatus.UNAUTHORIZED,
+                "correo o contraseña invalido",
+                request.getRequestURI(),
+                null
+        );
     }
 
 }

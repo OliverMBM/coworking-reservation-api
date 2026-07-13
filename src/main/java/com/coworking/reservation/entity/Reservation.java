@@ -3,7 +3,6 @@ package com.coworking.reservation.entity;
 import com.coworking.reservation.entity.enums.ReservationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,7 +34,7 @@ public class Reservation {
             nullable = false,
             foreignKey = @ForeignKey(name = "fk_reservations_user")
     )
-    private User user;
+    private UserAccount user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(
@@ -68,7 +67,7 @@ public class Reservation {
     }
 
     private Reservation(
-            User user,
+            UserAccount user,
             Space space,
             LocalDateTime startTime,
             LocalDateTime endTime,
@@ -84,7 +83,7 @@ public class Reservation {
     }
 
     public static Reservation pendingPayment(
-            User user,
+            UserAccount user,
             Space space,
             LocalDateTime startTime,
             LocalDateTime endTime,
@@ -102,7 +101,7 @@ public class Reservation {
         this.status = ReservationStatus.CANCELLED;
     }
 
-    public boolean belongsTo(User user) {
+    public boolean belongsTo(UserAccount user) {
         return this.user.getId().equals(user.getId());
     }
 }
