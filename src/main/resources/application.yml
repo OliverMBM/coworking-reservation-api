@@ -15,46 +15,46 @@ spring:
     caffeine:
       spec: maximumSize=100,expireAfterWrite=10m
 
-  server:
-    port: 8080
+server:
+  port: 8080
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include:
-            - health
-            - info
-            - metrics
-            - circuitbreakers
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - circuitbreakers
 
-      endpoint:
-        health:
-          show-details: when_authorized
+  endpoint:
+    health:
+      show-details: when_authorized
 
-      health:
-        circuitbreakers:
-          enabled: true
-
-  springdoc:
-    api-docs:
-      path: /v3/api-docs
-    swagger-ui:
-      path: /swagger-ui.html
-
-  resilience4j:
+  health:
     circuitbreakers:
-      instances:
-        paymentService:
-          sliding-window-type: count_based
-          sliding-window-size: 10
-          minimum-number-of-calls: 5
-          failure-rate-threshold: 50
-          wait-duration-in-open-state: 10s
-          permitted-number-of-calls-in-half-open-state: 3
-          register-health-indicator: true
+      enabled: true
 
-  app:
-    payment:
-      base-url: ${PAYMENT_BASE_URL:http://localhost:8081}
-      timeout: 2s
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      paymentService:
+        sliding-window-type: count_based
+        sliding-window-size: 10
+        minimum-number-of-calls: 5
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        permitted-number-of-calls-in-half-open-state: 3
+        register-health-indicator: true
+
+app:
+  payment:
+    base-url: ${APP_PAYMENT_BASE_URL:http://localhost:8081}
+    timeout: ${APP_PAYMENT_TIMEOUT}

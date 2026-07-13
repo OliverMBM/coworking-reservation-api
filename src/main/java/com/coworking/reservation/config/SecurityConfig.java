@@ -1,5 +1,6 @@
 package com.coworking.reservation.config;
 
+import com.coworking.reservation.security.JwtAuthenticationEntryPoint;
 import com.coworking.reservation.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,12 +23,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)
             throws Exception {
 
         http.csrf(AbstractHttpConfigurer::disable);
+        http.exceptionHandling(exception ->
+                exception.authenticationEntryPoint(authenticationEntryPoint)
+        );
 
         http.sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
