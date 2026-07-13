@@ -15,7 +15,7 @@ spring:
 app:
   jwt:
     secret: dev-secret-key-change-me-please-1234567890-1234567890
-    expiration: 1h
+    expiration: 8h
 
 logging:
   level:

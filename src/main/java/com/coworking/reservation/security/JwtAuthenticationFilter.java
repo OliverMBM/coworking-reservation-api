@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import io.jsonwebtoken.ExpiredJwtException;
 
 import java.io.IOException;
 
@@ -22,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String AUTH_ERROR_ATTRIBUTE = "authError";
 
     private final JwtService jwtService;
     private final CustomUserDetailService userDetailsService;
@@ -43,7 +45,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             authenticateRequest(token, request);
-        } catch (JwtException | IllegalArgumentException ignored) {
+        } catch (ExpiredJwtException exception) {
+            request.setAttribute(
+                    AUTH_ERROR_ATTRIBUTE,
+                    "JWT token ha expirado"
+            );
+            SecurityContextHolder.clearContext();
+        } catch (JwtException | IllegalArgumentException exception) {
+            request.setAttribute(
+                    AUTH_ERROR_ATTRIBUTE,
+                    "JWT token invalido"
+            );
             SecurityContextHolder.clearContext();
         }
 

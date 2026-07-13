@@ -1,10 +1,12 @@
 package com.coworking.reservation.service.payment;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class PaymentClient {
@@ -43,6 +45,13 @@ public class PaymentClient {
             PaymentValidationRequest request,
             Throwable throwable
     ){
+        log.warn(
+                "Validacion de pago fallo por reservacion {}, Razon: {}",
+                request.reservationId(),
+                throwable.getMessage(),
+                throwable
+        );
+
         return PaymentValidationResponse.pending(
                 "Servicio de pago no disponible. La reservacion queda en 'pendiente'."
         );
