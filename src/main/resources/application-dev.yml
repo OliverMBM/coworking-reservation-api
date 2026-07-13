@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/coworking_reservation
+    username: coworking
+    password: coworking
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+app:
+  jwt:
+    secret: dev-secret-key-change-me-please-1234567890-1234567890
+    expiration: 8h
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.security: info
+
+management:
+  endpoint:
+    health:
+      show-details: always

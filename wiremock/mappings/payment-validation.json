@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/payments/validate"
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": {
+      "approved": true,
+      "reference": "PAY-WIREMOCK-001",
+      "message": "Pago aprovado por servicio del mock"
+    }
+  }
+}

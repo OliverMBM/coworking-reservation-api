@@ -1,0 +1,260 @@
+{
+  "info": {
+    "name": "Coworking Reservation API",
+    "_postman_id": "7b3b6f0a-1f58-4c95-a8d9-coworking-api",
+    "description": "Colección Postman para probar la API de reservas de coworking.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "wiremockUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "adminToken",
+      "value": "paste_admin_token_here"
+    },
+    {
+      "key": "userToken",
+      "value": "paste_user_token_here"
+    },
+    {
+      "key": "spaceId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/actuator/health"
+      }
+    },
+    {
+      "name": "Payment Mock - Validate Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reservationId\": 1,\n  \"amount\": 50.00,\n  \"paymentMethod\": \"CARD\"\n}"
+        },
+        "url": "{{wiremockUrl}}/payments/validate"
+      }
+    },
+    {
+      "name": "Auth - Login Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.accessToken) {",
+              "    pm.collectionVariables.set('adminToken', response.accessToken);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@coworking.com\",\n  \"password\": \"Admin12345!\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "Auth - Register User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.accessToken) {",
+              "    pm.collectionVariables.set('userToken', response.accessToken);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Oliver User\",\n  \"email\": \"oliver.user@test.com\",\n  \"password\": \"User12345!\"\n}"
+        },
+        "url": "{{baseUrl}}/api/auth/register"
+      }
+    },
+    {
+      "name": "Spaces - Create Space as Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "if (response.id) {",
+              "    pm.collectionVariables.set('spaceId', response.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Sala de Reuniones A\",\n  \"type\": \"MEETING_ROOM\",\n  \"capacity\": 8,\n  \"location\": \"Segundo piso\",\n  \"hourlyRate\": 25.00\n}"
+        },
+        "url": "{{baseUrl}}/api/spaces"
+      }
+    },
+    {
+      "name": "Spaces - List Spaces as User",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/spaces"
+      }
+    },
+    {
+      "name": "Spaces - User Cannot Create Space",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Desk 1\",\n  \"type\": \"DESK\",\n  \"capacity\": 1,\n  \"location\": \"Area principal\",\n  \"hourlyRate\": 10.00\n}"
+        },
+        "url": "{{baseUrl}}/api/spaces"
+      }
+    },
+    {
+      "name": "Reservations - Create Reservation as User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"spaceId\": {{spaceId}},\n  \"startTime\": \"2026-07-15T09:00:00\",\n  \"endTime\": \"2026-07-15T11:00:00\",\n  \"paymentMethod\": \"CARD\"\n}"
+        },
+        "url": "{{baseUrl}}/api/reservations"
+      }
+    },
+    {
+      "name": "Reservations - My Reservations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{userToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservations/mine"
+      }
+    },
+    {
+      "name": "Reservations - Admin List All",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/admin/reservations"
+      }
+    },
+    {
+      "name": "Reports - Occupancy",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reports/occupancy?startTime=2026-07-15T08:00:00&endTime=2026-07-15T18:00:00"
+      }
+    },
+    {
+      "name": "Actuator - Circuit Breakers",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{adminToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/actuator/circuitbreakers"
+      }
+    }
+  ]
+}

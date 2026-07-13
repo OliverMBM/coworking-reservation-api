@@ -1,0 +1,69 @@
+@adminToken = pegar_token_admin_aqui
+@userToken = pegar_token_user_aqui
+
+### Login como administrador
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@coworking.com",
+  "password": "Admin12345!"
+}
+
+### Registro de usuario normal
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Oliver User",
+  "email": "oliver.user@test.com",
+  "password": "User12345!"
+}
+
+### Crear espacio como admin
+POST http://localhost:8080/api/spaces
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "name": "Sala de Reuniones A",
+  "type": "MEETING_ROOM",
+  "capacity": 8,
+  "location": "Segundo piso",
+  "hourlyRate": 25.00
+}
+
+### Lista de espacios para usuarios
+GET http://localhost:8080/api/spaces
+Authorization: Bearer {{userToken}}
+
+### Crear reservacion para usuario
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+Authorization: Bearer {{userToken}}
+
+{
+  "spaceId": 1,
+  "startTime": "2026-07-14T10:00:00",
+  "endTime": "2026-07-14T12:00:00",
+  "paymentMethod": "CARD"
+}
+
+### Listar mis reservaciones
+GET http://localhost:8080/api/reservations/mine
+Authorization: Bearer {{userToken}}
+
+### Administrador lista todas las reservaciones
+GET http://localhost:8080/api/admin/reservations
+Authorization: Bearer {{adminToken}}
+
+### Reporte de occupancy
+GET http://localhost:8080/api/reports/occupancy?startTime=2026-07-14T08:00:00&endTime=2026-07-14T18:00:00
+Authorization: Bearer {{adminToken}}
+
+### Health
+GET http://localhost:8080/actuator/health
+
+### Circuit Breakers
+GET http://localhost:8080/actuator/circuitbreakers
+Authorization: Bearer {{adminToken}}
