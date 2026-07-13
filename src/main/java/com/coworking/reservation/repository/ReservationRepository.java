@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
@@ -48,4 +49,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("endTime") LocalDateTime endTime,
             @Param("statuses") Collection<ReservationStatus> statuses
     );
+
+    @EntityGraph(attributePaths = {"user", "space"})
+    @Query("""
+            select r
+            from Reservation r
+            where r.id = :id
+            """)
+    Optional<Reservation> findByIdWithDetails(@Param("id") Long id);
 }
